@@ -1,5 +1,9 @@
 # Carrinho de Compras - Vue.js + Supabase
 
+**Autores**:
+- Kenzo Ribeiro Toda
+- Marcelo Hitoshi Kondo Oya
+
 Este projeto é uma aplicação web simples de carrinho de compras desenvolvida com **Vue.js** para o front-end e **Supabase** como banco de dados. O objetivo do projeto é permitir que os usuários visualizem produtos, adicionem ao carrinho e finalizem compras, com os dados armazenados no banco de dados Supabase.
 
 ## Tecnologias Usadas
@@ -23,4 +27,4 @@ Antes de rodar o projeto, tenha certeza de que você tem as seguintes dependênc
 No terminal, execute o seguinte comando para clonar o repositório para o seu ambiente local:
 
 ```bash
-git clone https://github.com/kenzotoda/carrinho-de-compras.git
+git clone https://github.com/seu-usuario/seu-repositorio.git
