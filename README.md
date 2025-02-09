@@ -27,4 +27,4 @@ Antes de rodar o projeto, tenha certeza de que você tem as seguintes dependênc
 No terminal, execute o seguinte comando para clonar o repositório para o seu ambiente local:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
+git clone https://github.com/kenzotoda/carrinho-de-compras.git
