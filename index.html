@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+  <title>Carrinho de Compras</title>
+</head>
+<body>
+  <div class="container mt-5" id="app">
+    <h1 class="text-center">Carrinho de Compras</h1>
+    
+    <!-- Lista de Produtos -->
+    <div class="border p-4 rounded shadow-sm">
+      <h4>Produtos Disponíveis</h4>
+      <ul class="list-group">
+        <li v-for="produto in produtos" :key="produto.id" class="list-group-item d-flex justify-content-between align-items-center">
+          {{ produto.nome }} - R$ {{ produto.preco.toFixed(2) }}
+          <button class="btn btn-success" @click="adicionarAoCarrinho(produto)">Adicionar</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Carrinho -->
+    <div class="mt-4 border p-4 rounded shadow-sm">
+      <h4>Carrinho</h4>
+      <table class="table table-striped" v-if="carrinho.length > 0">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in carrinho" :key="item.id">
+            <td>{{ item.nome }}</td>
+            <td>{{ item.quant }}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" @click="removerDoCarrinho(item)">Remover</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else>Nenhum item no carrinho.</p>
+      <button class="btn btn-primary" @click="finalizarCompra" v-if="carrinho.length > 0">Finalizar Compra</button>
+    </div>
+  </div>
+
+  <script>
+    const apiUrlCarrinho = 'https://epdjsslfxfljqwpvuocu.supabase.co/rest/v1/carrinho';
+    const apiUrlProdutos = 'https://epdjsslfxfljqwpvuocu.supabase.co/rest/v1/produtos';
+    const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwZGpzc2xmeGZsanF3cHZ1b2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkxMjc1OTksImV4cCI6MjA1NDcwMzU5OX0.3DxD3lyzyZ_aVrawO97c5hBPmU23ljxcPUioS1VwAtw';
+    const apiAuthorization = 'Bearer ' + apiKey;
+    
+    const app = Vue.createApp({
+      data() {
+        return {
+          produtos: [],
+          carrinho: []
+        };
+      },
+      methods: {
+        carregarProdutos() {
+          $.ajax({
+            url: apiUrlProdutos,
+            type: 'GET',
+            headers: {
+              'apikey': apiKey,
+              'Authorization': apiAuthorization
+            },
+            success: (data) => {
+              this.produtos = data;
+            },
+            error: (error) => {
+              console.error('Erro ao carregar produtos:', error);
+            }
+          });
+        },
+        adicionarAoCarrinho(produto) {
+          let item = this.carrinho.find(i => i.id === produto.id);
+          if (item) {
+            item.quant++;
+          } else {
+            this.carrinho.push({ ...produto, quant: 1 });
+          }
+        },
+        removerDoCarrinho(item) {
+          this.carrinho = this.carrinho.filter(i => i.id !== item.id);
+        },
+        finalizarCompra() {
+          // Mapeando os itens do carrinho para o formato esperado pela tabela do Supabase
+          const dadosCarrinho = this.carrinho.map(item => ({
+            nome: item.nome,      // Envia o nome do produto
+            quant: item.quant     // Envia a quantidade do produto
+          }));
+
+          // Enviar os dados para o Supabase
+          $.ajax({
+            type: 'POST',
+            url: apiUrlCarrinho,
+            data: JSON.stringify(dadosCarrinho),
+            contentType: 'application/json',
+            headers: {
+              'apikey': apiKey,
+              'Authorization': apiAuthorization
+            },
+            success: () => {
+              alert("Compra finalizada com sucesso!");
+              this.carrinho = [];  // Limpar o carrinho após finalizar a compra
+            },
+            error: (erro) => {
+              alert("Erro ao finalizar compra: " + erro.message);
+            }
+          });
+        }
+      },
+      mounted() {
+        this.carregarProdutos();
+      }
+    });
+    app.mount("#app");
+  </script>
+</body>
+</html>
